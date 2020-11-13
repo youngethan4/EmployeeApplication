@@ -8,30 +8,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.tcs.employee.utils.DBUtils;
 import com.tcs.employee.model.Employee;
 
+@Repository
 public class EmployeeDAOImpl implements EmployeeDAO {
-
-	private static EmployeeDAOImpl employeeDAOImpl;
-
-	public static synchronized EmployeeDAO getInstance() {
-		if (employeeDAOImpl == null)
-			employeeDAOImpl = new EmployeeDAOImpl();
-		return employeeDAOImpl;
-	}
-
-	private EmployeeDAOImpl() {
-	}
+	
+	@Autowired
+	DBUtils dbUtils;
 
 	@Override
 	public String addEmployee(Employee employee) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String insert = "insert into employee (id, organizationId, departmentId, "
 				+ "name, age, position) values(?,?,?,?,?,?)";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(insert);
 			preparedStatement.setLong(1, employee.getId());
 			preparedStatement.setLong(2, employee.getOrganizationId());
@@ -56,18 +51,17 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String updateEmployee(long id, Employee employee) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String update = "update employee set id=?, organizationId=?, "
 				+ "departmentId=?, name=?, age=?, position=? where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(update);
 			preparedStatement.setLong(1, employee.getId());
 			preparedStatement.setLong(2, employee.getOrganizationId());
@@ -93,17 +87,16 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String deleteEmployee(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String delete = "delete from employee where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(delete);
 			preparedStatement.setLong(1, id);
 
@@ -123,13 +116,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public Optional<Employee> findById(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		Employee employee = null;
 		ResultSet resultSet = null;
 		String query = "select * from employee where id=?";
@@ -157,14 +150,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		return Optional.of(employee);
 	}
 
 	@Override
 	public Optional<List<Employee>> getEmployees() {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Employee> employees = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from employee";
@@ -191,7 +184,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		if(employees.size() == 0)
 			return Optional.empty();
@@ -200,7 +193,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 	@Override
 	public Optional<List<Employee>> findByOrganizationId(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Employee> employees = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from employee where organizationId=?";
@@ -223,7 +216,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		if(employees.size() == 0)
 			return Optional.empty();
@@ -232,7 +225,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 	@Override
 	public Optional<List<Employee>> findByDepartmentId(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Employee> employees = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from employee where departmentId=?";
@@ -255,7 +248,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		return Optional.ofNullable(employees);
 	}

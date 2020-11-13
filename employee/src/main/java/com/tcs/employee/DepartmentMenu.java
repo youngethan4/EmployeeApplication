@@ -3,14 +3,24 @@ package com.tcs.employee;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.tcs.employee.config.DBConfig;
 import com.tcs.employee.dao.DepartmentDAOImpl;
 import com.tcs.employee.dao.OrganizationDAOImpl;
 import com.tcs.employee.model.Department;
 import com.tcs.employee.model.Organization;
+import com.tcs.employee.service.DepartmentService;
+import com.tcs.employee.service.EmployeeService;
 
 public class DepartmentMenu {
+	
+	private static DepartmentService departmentService;
 
 	public static void start() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DBConfig.class);
+		departmentService = context.getBean(DepartmentService.class);
+		
 		String menuOptions = "a - Add Department | u - Update Department | "
 				+ "d - Delete Department | f - Find Department | "
 				+ "o - Find Department By Organization ID | "
@@ -56,7 +66,7 @@ public class DepartmentMenu {
 		department.setId(id);
 		department.setOrganizationId(orgId);
 		department.setName(name);
-		String result = DepartmentDAOImpl.getInstance().addDepartment(department);
+		String result = departmentService.addDepartment(department);
 		System.out.println(result);
 	}
 	
@@ -77,7 +87,7 @@ public class DepartmentMenu {
 		department.setId(id);
 		department.setOrganizationId(orgId);
 		department.setName(name);
-		String result = DepartmentDAOImpl.getInstance().updateDepartment(updateId, department);
+		String result = departmentService.updateDepartment(updateId, department);
 		System.out.println(result);
 	}
 	
@@ -85,7 +95,7 @@ public class DepartmentMenu {
 		long id = Menu.getInputLong("Enter ID:");
 		if(id == -1)
 			return;
-		String result = DepartmentDAOImpl.getInstance().deleteDepartment(id);
+		String result = departmentService.deleteDepartment(id);
 		System.out.println(result);
 	}
 	
@@ -93,7 +103,7 @@ public class DepartmentMenu {
 		long id = Menu.getInputLong("Enter ID:");
 		if(id == -1)
 			return;
-		Optional<Department> optional = DepartmentDAOImpl.getInstance().findById(id);
+		Optional<Department> optional = departmentService.findById(id);
 		if(optional.isPresent())
 			System.out.println(optional.get());
 		else
@@ -101,7 +111,7 @@ public class DepartmentMenu {
 	}
 	
 	private static void getAll() {
-		Optional<List<Department>> optional = DepartmentDAOImpl.getInstance().getDepartments();
+		Optional<List<Department>> optional = departmentService.getDepartments();
 		if(optional.isPresent()) {
 			List<Department> departments = optional.get();
 			System.out.println(departments.size() + " departments found:");
@@ -115,7 +125,7 @@ public class DepartmentMenu {
 		long id = Menu.getInputLong("Enter Organization ID:");
 		if(id == -1)
 			return;
-		Optional<List<Department>> optional = DepartmentDAOImpl.getInstance().findByOrginizationId(id);
+		Optional<List<Department>> optional = departmentService.findByOrginizationId(id);
 		if(optional.isPresent()) {
 			List<Department> departments = optional.get();
 			System.out.println(departments.size() + " departments found:");

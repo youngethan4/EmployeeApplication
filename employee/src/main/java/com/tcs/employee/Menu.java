@@ -39,6 +39,7 @@ public class Menu {
 		} catch(NumberFormatException e){
 			e.printStackTrace();
 			System.out.println("Number not detected.");
+			return getInputInt(output);
 		}
 		return inputInt;
 	}
@@ -51,6 +52,7 @@ public class Menu {
 		} catch(NumberFormatException e){
 			e.printStackTrace();
 			System.out.println("Number not detected.");
+			return getInputLong(output);
 		}
 		return inputLong;
 	}
@@ -65,6 +67,7 @@ public class Menu {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return getInput(output);
 		}
 		return input;
 	}

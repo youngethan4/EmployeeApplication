@@ -8,31 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.tcs.employee.model.Department;
 import com.tcs.employee.model.Employee;
 import com.tcs.employee.model.Organization;
 import com.tcs.employee.utils.DBUtils;
 
+@Repository
 public class OrganizationDAOImpl implements OrganizationDAO {
 	
-	private static OrganizationDAOImpl organizationDAOImpl;
-
-	public static synchronized OrganizationDAO getInstance() {
-		if (organizationDAOImpl == null)
-			organizationDAOImpl = new OrganizationDAOImpl();
-		return organizationDAOImpl;
-	}
-
-	private OrganizationDAOImpl() {
-	}
+	@Autowired
+	DBUtils dbUtils;
 
 	@Override
 	public String addOrganization(Organization organization) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String insert = "insert into organization (id, name, address) values(?,?,?)";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(insert);
 			preparedStatement.setLong(1, organization.getId());
 			preparedStatement.setString(2, organization.getName());
@@ -54,18 +49,17 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String updateOrganization(long id, Organization organization) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String update = "update organization set id=?, name=?, address=? "
 				+ "where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(update);
 			preparedStatement.setLong(1, organization.getId());
 			preparedStatement.setString(2, organization.getName());
@@ -88,17 +82,16 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String deleteOrganization(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String delete = "delete from organization where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(delete);
 			preparedStatement.setLong(1, id);
 
@@ -118,13 +111,18 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
+	
+	@Autowired
+	EmployeeDAO employeeDao;
+	@Autowired
+	DepartmentDAO departmentDao;
 
 	@Override
 	public Optional<Organization> findById(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		Organization organization = null;
 		ResultSet resultSet = null;
 		String query = "select * from organization where id=?";
@@ -134,8 +132,6 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 
 			resultSet = preparedStatement.executeQuery();
 
-			EmployeeDAO employeeDao = EmployeeDAOImpl.getInstance();
-			DepartmentDAO departmentDao = DepartmentDAOImpl.getInstance();
 			if (resultSet.next()) {
 				organization = new Organization();
 				long organizationId = resultSet.getLong("id");
@@ -151,14 +147,14 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		return Optional.ofNullable(organization);
 	}
 
 	@Override
 	public Optional<List<Organization>> getOrganizations() {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Organization> organizations = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from organization";
@@ -166,8 +162,6 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			resultSet = preparedStatement.executeQuery();
 
-			EmployeeDAO employeeDao = EmployeeDAOImpl.getInstance();
-			DepartmentDAO departmentDao = DepartmentDAOImpl.getInstance();
 			while (resultSet.next()) {
 				Organization organization = new Organization();
 				long organizationId = resultSet.getLong("id");
@@ -184,7 +178,7 @@ public class OrganizationDAOImpl implements OrganizationDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		if(organizations.size() == 0)
 			return Optional.empty();

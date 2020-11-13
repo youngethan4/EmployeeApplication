@@ -9,31 +9,25 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.dbcp2.datasources.PerUserPoolDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.tcs.employee.model.Department;
 import com.tcs.employee.model.Employee;
 import com.tcs.employee.utils.DBUtils;
 
+@Repository
 public class DepartmentDAOImpl implements DepartmentDAO {
 	
-	private static DepartmentDAOImpl departmentDAOImpl;
-
-	public static synchronized DepartmentDAO getInstance() {
-		if (departmentDAOImpl == null)
-			departmentDAOImpl = new DepartmentDAOImpl();
-		return departmentDAOImpl;
-	}
-
-	private DepartmentDAOImpl() {
-	}
+	@Autowired
+	DBUtils dbUtils;
 
 	@Override
 	public String addDepartment(Department department) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String insert = "insert into department (id, organizationId, name) values(?,?,?)";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(insert);
 			preparedStatement.setLong(1, department.getId());
 			preparedStatement.setLong(2, department.getOrganizationId());
@@ -55,18 +49,17 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String updateDepartment(long id, Department department) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String update = "update department set id=?, organizationId=?, name=? "
 				+ "where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(update);
 			preparedStatement.setLong(1, department.getId());
 			preparedStatement.setLong(2, department.getOrganizationId());
@@ -89,17 +82,16 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
 	@Override
 	public String deleteDepartment(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		int result = 0;
 		String delete = "delete from department where id=?";
 		try {
-			connection.setAutoCommit(false);
 			PreparedStatement preparedStatement = connection.prepareStatement(delete);
 			preparedStatement.setLong(1, id);
 
@@ -119,13 +111,16 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return "fail";
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 	}
 
+	@Autowired
+	EmployeeDAO employeeDao;
+	
 	@Override
 	public Optional<Department> findById(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		Department department = null;
 		ResultSet resultSet = null;
 		String query = "select * from department where id=?";
@@ -135,7 +130,6 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 
 			resultSet = preparedStatement.executeQuery();
 
-			EmployeeDAO employeeDao = EmployeeDAOImpl.getInstance();
 			if (resultSet.next()) {
 				department = new Department();
 				long departmentId = resultSet.getLong("id");
@@ -149,14 +143,14 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		return Optional.ofNullable(department);
 	}
 
 	@Override
 	public Optional<List<Department>> getDepartments() {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Department> departments = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from department";
@@ -164,7 +158,6 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			resultSet = preparedStatement.executeQuery();
 
-			EmployeeDAO employeeDao = EmployeeDAOImpl.getInstance();
 			while (resultSet.next()) {
 				Department department = new Department();
 				long departmentId = resultSet.getLong("id");
@@ -179,7 +172,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		if(departments.size() == 0)
 			return Optional.empty();
@@ -188,7 +181,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 
 	@Override
 	public Optional<List<Department>> findByOrginizationId(long id) {
-		Connection connection = DBUtils.getConnection();
+		Connection connection = dbUtils.getConnection();
 		List<Department> departments = new ArrayList<>();
 		ResultSet resultSet = null;
 		String query = "select * from department where organizationId=?";
@@ -196,8 +189,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			PreparedStatement preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setLong(1, id);
 			resultSet = preparedStatement.executeQuery();
-
-			EmployeeDAO employeeDao = EmployeeDAOImpl.getInstance();
+			
 			while (resultSet.next()) {
 				Department department = new Department();
 				long departmentId = resultSet.getLong("id");
@@ -212,7 +204,7 @@ public class DepartmentDAOImpl implements DepartmentDAO {
 			e.printStackTrace();
 			return Optional.empty();
 		} finally {
-			DBUtils.closeConnection(connection);
+			dbUtils.closeConnection(connection);
 		}
 		if(departments.size() == 0)
 			return Optional.empty();

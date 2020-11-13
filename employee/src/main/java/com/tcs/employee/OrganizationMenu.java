@@ -3,12 +3,24 @@ package com.tcs.employee;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.tcs.employee.config.DBConfig;
+import com.tcs.employee.dao.OrganizationDAO;
 import com.tcs.employee.dao.OrganizationDAOImpl;
 import com.tcs.employee.model.Organization;
+import com.tcs.employee.service.DepartmentService;
+import com.tcs.employee.service.OrganizationService;
 
 public class OrganizationMenu {
+	
+	private static OrganizationService organizationService;
 
 	public static void start() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DBConfig.class);
+		organizationService = context.getBean(OrganizationService.class);
+		
 		String menuOptions = "a - Add Organization | u - Update Organization | "
 				+ "d - Delete Organization | f - Find Organization | "
 				+ "g - Get All Organizations | c - Cancel";
@@ -46,7 +58,7 @@ public class OrganizationMenu {
 		organization.setId(id);
 		organization.setName(name);
 		organization.setAddress(address);
-		String result = OrganizationDAOImpl.getInstance().addOrganization(organization);
+		String result = organizationService.addOrganization(organization);
 		System.out.println(result);
 	}
 	
@@ -67,7 +79,7 @@ public class OrganizationMenu {
 		organization.setId(id);
 		organization.setName(name);
 		organization.setAddress(address);
-		String result = OrganizationDAOImpl.getInstance().updateOrganization(updateId, organization);
+		String result = organizationService.updateOrganization(updateId, organization);
 		System.out.println(result);
 	}
 	
@@ -75,7 +87,7 @@ public class OrganizationMenu {
 		long id = Menu.getInputLong("Enter ID:");
 		if(id == -1)
 			return;
-		String result = OrganizationDAOImpl.getInstance().deleteOrganization(id);
+		String result = organizationService.deleteOrganization(id);
 		System.out.println(result);
 	}
 	
@@ -83,7 +95,7 @@ public class OrganizationMenu {
 		long id = Menu.getInputLong("Enter ID:");
 		if(id == -1)
 			return;
-		Optional<Organization> optional = OrganizationDAOImpl.getInstance().findById(id);
+		Optional<Organization> optional = organizationService.findById(id);
 		if(optional.isPresent()) {
 			System.out.println(optional.get());
 		} else {
@@ -92,7 +104,7 @@ public class OrganizationMenu {
 	}
 	
 	private static void getAll() {
-		Optional<List<Organization>> optional = OrganizationDAOImpl.getInstance().getOrganizations();
+		Optional<List<Organization>> optional = organizationService.getOrganizations();
 		if(optional.isPresent()) {
 			List<Organization> organizations = optional.get();
 			System.out.println(organizations.size() + " organizations found:");
