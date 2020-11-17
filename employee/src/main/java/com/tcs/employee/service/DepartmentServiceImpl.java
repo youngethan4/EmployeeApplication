@@ -5,51 +5,58 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.tcs.employee.dao.DepartmentDAO;
-import com.tcs.employee.dao.DepartmentDAOImpl;
 import com.tcs.employee.model.Department;
+import com.tcs.employee.repository.DepartmentRepository;
 
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
 	@Autowired
-	DepartmentDAO departmentDao;
+	DepartmentRepository departmentRepository;
 
 	@Override
-	public String addDepartment(Department department) {
-		String result = departmentDao.addDepartment(department);
-		return result;
+	public String save(Department department) {
+		try{
+			departmentRepository.save(department);
+			return "success";
+		} catch(Exception e) {
+			e.printStackTrace();
+			return "fail";
+		}
 	}
-
-	@Override
-	public String updateDepartment(long id, Department department) {
-		String result = departmentDao.updateDepartment(id, department);
-		return result;
-	}
-
+	
 	@Override
 	public String deleteDepartment(long id) {
-		String result = departmentDao.deleteDepartment(id);
-		return result;
+		try{
+			departmentRepository.deleteById(id);
+			return "success";
+		} catch(Exception e) {
+			e.printStackTrace();
+			return "fail";
+		}
 	}
 
 	@Override
+	@Transactional
 	public Optional<Department> findById(long id) {
-		Optional<Department> optional = departmentDao.findById(id);
+		Optional<Department> optional = departmentRepository.findById(id);
 		return optional;
 	}
 
 	@Override
+	@Transactional
 	public Optional<List<Department>> getDepartments() {
-		Optional<List<Department>> optional = departmentDao.getDepartments();
-		return optional;
+		List<Department> departments = departmentRepository.findAll();
+		return Optional.ofNullable(departments);
 	}
 
 	@Override
+	@Transactional
 	public Optional<List<Department>> findByOrginizationId(long id) {
-		Optional<List<Department>> optional = departmentDao.findByOrginizationId(id);
-		return optional;
+		List<Department> departments = departmentRepository.findByOrganizationId(id);
+		return Optional.ofNullable(departments);
 	}
 
 }

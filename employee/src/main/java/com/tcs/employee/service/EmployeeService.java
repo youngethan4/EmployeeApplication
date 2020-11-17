@@ -6,8 +6,7 @@ import java.util.Optional;
 import com.tcs.employee.model.Employee;
 
 public interface EmployeeService {
-	public String addEmployee(Employee employee);
-	public String updateEmployee(long id, Employee employee);
+	public String save(Employee employee);
 	public String deleteEmployee(long id);
 	public Optional<Employee> findById(long id);
 	public Optional<List<Employee>> getEmployees();

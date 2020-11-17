@@ -5,45 +5,50 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.tcs.employee.dao.OrganizationDAO;
-import com.tcs.employee.dao.OrganizationDAOImpl;
+import org.springframework.transaction.annotation.Transactional;
 import com.tcs.employee.model.Organization;
+import com.tcs.employee.repository.OrganizationRepository;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
 	
 	@Autowired
-	OrganizationDAO organizationDao;
+	OrganizationRepository organizationRepository;
 
 	@Override
-	public String addOrganization(Organization organization) {
-		String result = organizationDao.addOrganization(organization);
-		return result;
-	}
-
-	@Override
-	public String updateOrganization(long id, Organization organization) {
-		String result = organizationDao.updateOrganization(id, organization);
-		return result;
+	public String save(Organization organization) {
+		try{
+			organizationRepository.save(organization);
+			return "success";
+		} catch(Exception e) {
+			e.printStackTrace();
+			return "fail";
+		}
 	}
 
 	@Override
 	public String deleteOrganization(long id) {
-		String result = organizationDao.deleteOrganization(id);
-		return result;
+		try{
+			organizationRepository.deleteById(id);
+			return "success";
+		} catch(Exception e) {
+			e.printStackTrace();
+			return "fail";
+		}
 	}
 
 	@Override
+	@Transactional
 	public Optional<Organization> findById(long id) {
-		Optional<Organization> optional = organizationDao.findById(id);
+		Optional<Organization> optional = organizationRepository.findById(id);
 		return optional;
 	}
 
 	@Override
+	@Transactional
 	public Optional<List<Organization>> getOrganizations() {
-		Optional<List<Organization>> optional = organizationDao.getOrganizations();
-		return optional;
+		List<Organization> organizations = organizationRepository.findAll();
+		return Optional.ofNullable(organizations);
 	}
 
 }

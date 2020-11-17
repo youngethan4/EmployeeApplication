@@ -6,20 +6,20 @@ import java.util.Optional;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.tcs.employee.config.DBConfig;
-import com.tcs.employee.dao.DepartmentDAOImpl;
-import com.tcs.employee.dao.OrganizationDAOImpl;
 import com.tcs.employee.model.Department;
 import com.tcs.employee.model.Organization;
 import com.tcs.employee.service.DepartmentService;
-import com.tcs.employee.service.EmployeeService;
+import com.tcs.employee.service.OrganizationService;
 
 public class DepartmentMenu {
 	
 	private static DepartmentService departmentService;
+	private static OrganizationService organizationService;
 
 	public static void start() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DBConfig.class);
 		departmentService = context.getBean(DepartmentService.class);
+		organizationService = context.getBean(OrganizationService.class);
 		
 		String menuOptions = "a - Add Department | u - Update Department | "
 				+ "d - Delete Department | f - Find Department | "
@@ -66,15 +66,12 @@ public class DepartmentMenu {
 		department.setId(id);
 		department.setOrganizationId(orgId);
 		department.setName(name);
-		String result = departmentService.addDepartment(department);
+		String result = departmentService.save(department);
 		System.out.println(result);
 	}
 	
 	private static void update() {
-		long updateId = Menu.getInputLong("Enter ID of department to update:");
-		if(updateId == -1)
-			return;
-		long id = Menu.getInputLong("Enter ID:");
+		long id = Menu.getInputLong("Enter ID of department to update:");
 		if(id == -1)
 			return;
 		long orgId = Menu.getInputLong("Enter Organization ID:");
@@ -87,7 +84,7 @@ public class DepartmentMenu {
 		department.setId(id);
 		department.setOrganizationId(orgId);
 		department.setName(name);
-		String result = departmentService.updateDepartment(updateId, department);
+		String result = departmentService.save(department);
 		System.out.println(result);
 	}
 	

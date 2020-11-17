@@ -6,19 +6,24 @@ import java.util.Optional;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.tcs.employee.config.DBConfig;
-import com.tcs.employee.dao.DepartmentDAOImpl;
-import com.tcs.employee.dao.EmployeeDAOImpl;
 import com.tcs.employee.model.Department;
 import com.tcs.employee.model.Employee;
+import com.tcs.employee.model.Organization;
+import com.tcs.employee.service.DepartmentService;
 import com.tcs.employee.service.EmployeeService;
+import com.tcs.employee.service.OrganizationService;
 
 public class EmployeeMenu {
 	
 	private static EmployeeService employeeService;
+	private static DepartmentService departmentService;
+	private static OrganizationService organizationService;
 
 	public static void start() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(DBConfig.class);
 		employeeService = context.getBean(EmployeeService.class);
+		departmentService = context.getBean(DepartmentService.class);
+		organizationService = context.getBean(OrganizationService.class);
 		
 		String menuOptions = "a - Add Employee | u - Update Employee | "
 				+ "d - Delete Employee | f - Find Employee | "
@@ -77,15 +82,12 @@ public class EmployeeMenu {
 		employee.setName(name);
 		employee.setAge(age);
 		employee.setPosition(position);
-		String result = employeeService.addEmployee(employee);
+		String result = employeeService.save(employee);
 		System.out.println(result);
 	}
 	
 	private static void update() {
-		long updateId = Menu.getInputLong("Enter ID of employee to update:");
-		if(updateId == -1)
-			return;
-		long id = Menu.getInputLong("Enter ID:");
+		long id = Menu.getInputLong("Enter ID of employee to update:");
 		if(id == -1)
 			return;
 		long orgId = Menu.getInputLong("Enter Organization ID:");
@@ -110,7 +112,7 @@ public class EmployeeMenu {
 		employee.setName(name);
 		employee.setAge(age);
 		employee.setPosition(position);
-		String result = employeeService.updateEmployee(updateId, employee);
+		String result = employeeService.save(employee);
 		System.out.println(result);
 	}
 	

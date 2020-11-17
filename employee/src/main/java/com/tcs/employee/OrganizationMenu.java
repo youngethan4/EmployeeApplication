@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.tcs.employee.config.DBConfig;
-import com.tcs.employee.dao.OrganizationDAO;
-import com.tcs.employee.dao.OrganizationDAOImpl;
 import com.tcs.employee.model.Organization;
 import com.tcs.employee.service.DepartmentService;
 import com.tcs.employee.service.OrganizationService;
@@ -58,15 +56,12 @@ public class OrganizationMenu {
 		organization.setId(id);
 		organization.setName(name);
 		organization.setAddress(address);
-		String result = organizationService.addOrganization(organization);
+		String result = organizationService.save(organization);
 		System.out.println(result);
 	}
 	
 	private static void update() {
-		long updateId = Menu.getInputLong("Enter ID of Org to update:");
-		if(updateId == -1)
-			return;
-		long id = Menu.getInputLong("Enter ID:");
+		long id = Menu.getInputLong("Enter ID of Org to update:");
 		if(id == -1)
 			return;
 		String name = Menu.getInput("Enter name:");
@@ -79,7 +74,7 @@ public class OrganizationMenu {
 		organization.setId(id);
 		organization.setName(name);
 		organization.setAddress(address);
-		String result = organizationService.updateOrganization(updateId, organization);
+		String result = organizationService.save(organization);
 		System.out.println(result);
 	}
 	
