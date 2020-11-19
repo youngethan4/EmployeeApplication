@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tcs.employee.model.Employee;
+import com.tcs.employee.model.Organization;
 import com.tcs.employee.repository.EmployeeRepository;
 
 @Service
@@ -50,9 +51,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Optional<List<Employee>> findByOrganizationId(long id) {
-		List<Employee> employees = employeeRepository.findByOrganizationId(id);
-		return Optional.ofNullable(employees);
+	public Optional<List<Employee>> findByOrganization(Organization organization) {
+		return Optional.ofNullable(employeeRepository.findByOrganization(organization));
 	}
 
 }

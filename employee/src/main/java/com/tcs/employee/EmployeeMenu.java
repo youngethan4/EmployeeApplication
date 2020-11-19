@@ -58,27 +58,29 @@ public class EmployeeMenu {
 	
 	private static void add() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		long orgId = Menu.getInputLong("Enter Organization ID:");
-		if(orgId == -1)
-			return;
 		long deptId = Menu.getInputLong("Enter Department ID:");
-		if(deptId == -1)
-			return;
 		String name = Menu.getInput("Enter name:");
-		if(name.equals(""))
-			return;
 		int age = Menu.getInputInt("Enter age:");
-		if(age == -1)
-			return;
 		String position = Menu.getInput("Enter position:");
-		if(position.equals(""))
-			return;
 		Employee employee = new Employee();
 		employee.setId(id);
-		employee.setOrganizationId(orgId);
-		employee.setDepartmentId(deptId);
+		//employee.setOrganizationId(orgId);
+		//employee.setDepartmentId(deptId);
+		Optional<Organization> optional = organizationService.findById(orgId);
+		if(optional.isPresent()) {
+			employee.setOrganization(optional.get());
+		} else {
+			System.out.println("Organization does not exists.");
+			return;
+		}
+		Optional<Department> optional2 = departmentService.findById(deptId);
+		if(optional2.isPresent()) {
+			employee.setDepartment(optional2.get());
+		} else {
+			System.out.println("Department does not exists.");
+			return;
+		}
 		employee.setName(name);
 		employee.setAge(age);
 		employee.setPosition(position);
@@ -88,49 +90,48 @@ public class EmployeeMenu {
 	
 	private static void update() {
 		long id = Menu.getInputLong("Enter ID of employee to update:");
-		if(id == -1)
-			return;
 		long orgId = Menu.getInputLong("Enter Organization ID:");
-		if(orgId == -1)
-			return;
 		long deptId = Menu.getInputLong("Enter Department ID:");
-		if(deptId == -1)
-			return;
 		String name = Menu.getInput("Enter name:");
-		if(name.equals(""))
-			return;
 		int age = Menu.getInputInt("Enter age:");
-		if(age == -1)
-			return;
 		String position = Menu.getInput("Enter position:");
-		if(position.equals(""))
-			return;
+		
 		Employee employee = new Employee();
 		employee.setId(id);
-		employee.setOrganizationId(orgId);
-		employee.setDepartmentId(deptId);
 		employee.setName(name);
 		employee.setAge(age);
 		employee.setPosition(position);
+		
+		Optional<Organization> optional = organizationService.findById(orgId);
+		if(optional.isPresent()) {
+			employee.setOrganization(optional.get());
+		} else {
+			System.out.println("Organization does not exists.");
+			return;
+		}
+		Optional<Department> optional2 = departmentService.findById(deptId);
+		if(optional2.isPresent()) {
+			employee.setDepartment(optional2.get());
+		} else {
+			System.out.println("Department does not exists.");
+			return;
+		}
+		
 		String result = employeeService.save(employee);
 		System.out.println(result);
 	}
 	
 	private static void delete() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		String result = employeeService.deleteEmployee(id);
 		System.out.println(result);
 	}
 	
 	private static void find() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		Optional<Employee> optional = employeeService.findById(id);
 		if(optional.isPresent()) 
-			System.out.println(optional.get());
+			printEmployee(optional.get());
 		else
 			System.out.println("Not found");
 	}
@@ -140,8 +141,9 @@ public class EmployeeMenu {
 		if(optional.isPresent()) {
 			List<Employee> employees = optional.get();
 			System.out.println(employees.size() + " employees found:");
-			for(Employee employee: employees)
-				System.out.println(employee);
+			employees.forEach(e -> {
+				printEmployee(e);
+			});
 		} else {
 			System.out.println("None found");
 		}
@@ -149,16 +151,29 @@ public class EmployeeMenu {
 	
 	private static void findByOrg() {
 		long id = Menu.getInputLong("Enter Organization ID:");
-		if(id == -1)
+		Optional<Organization> orgOptional = organizationService.findById(id);
+		if(orgOptional.isEmpty()) {
+			System.out.println("Organization not found.");
 			return;
-		Optional<List<Employee>> optional = employeeService.findByOrganizationId(id);
+		}
+		Optional<List<Employee>> optional = employeeService.findByOrganization(orgOptional.get());
 		if(optional.isPresent()) {
 			List<Employee> employees = optional.get();
 			System.out.println(employees.size() + " employees found:");
-			for(Employee employee: employees)
-				System.out.println(employee);
+			employees.forEach(e -> {
+				printEmployee(e);
+			});
 		} else {
 			System.out.println("None found");
 		}
+	}
+	
+	private static void printEmployee(Employee employee) {
+		System.out.print("ID: " + employee.getId());
+		System.out.print("  Org ID: " + employee.getOrganization().getId());
+		System.out.print("  Dept ID: " + employee.getDepartment().getId());
+		System.out.print("  Name: " + employee.getName());
+		System.out.print("  Age: " + employee.getAge());
+		System.out.print("  Position: " + employee.getPosition() + "\n");
 	}
 }

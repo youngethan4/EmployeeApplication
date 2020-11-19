@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tcs.employee.model.Department;
+import com.tcs.employee.model.Organization;
 import com.tcs.employee.repository.DepartmentRepository;
 
 @Service
@@ -53,10 +54,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	@Transactional
-	public Optional<List<Department>> findByOrginizationId(long id) {
-		List<Department> departments = departmentRepository.findByOrganizationId(id);
-		return Optional.ofNullable(departments);
+	public Optional<List<Department>> findByOrginization(Organization organization) {
+		return Optional.ofNullable(departmentRepository.findByOrganization(organization));
 	}
 
 }

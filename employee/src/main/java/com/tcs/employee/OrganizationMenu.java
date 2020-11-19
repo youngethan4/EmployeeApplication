@@ -48,8 +48,6 @@ public class OrganizationMenu {
 	
 	private static void add() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		String name = Menu.getInput("Enter name:");
 		String address = Menu.getInput("Enter address:");
 		Organization organization = new Organization();
@@ -62,14 +60,8 @@ public class OrganizationMenu {
 	
 	private static void update() {
 		long id = Menu.getInputLong("Enter ID of Org to update:");
-		if(id == -1)
-			return;
 		String name = Menu.getInput("Enter name:");
-		if(name.equals(""))
-			return;
 		String address = Menu.getInput("Enter address:");
-		if(address.equals(""))
-			return;
 		Organization organization = new Organization();
 		organization.setId(id);
 		organization.setName(name);
@@ -80,16 +72,12 @@ public class OrganizationMenu {
 	
 	private static void delete() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		String result = organizationService.deleteOrganization(id);
 		System.out.println(result);
 	}
 	
 	private static void find() {
 		long id = Menu.getInputLong("Enter ID:");
-		if(id == -1)
-			return;
 		Optional<Organization> optional = organizationService.findById(id);
 		if(optional.isPresent()) {
 			System.out.println(optional.get());
@@ -103,10 +91,17 @@ public class OrganizationMenu {
 		if(optional.isPresent()) {
 			List<Organization> organizations = optional.get();
 			System.out.println(organizations.size() + " organizations found:");
-			for(Organization organization: organizations)
-				System.out.println(organization);
+			organizations.forEach(o -> {
+				printOrganization(o);
+			});
 		} else {
 			System.out.println("None found");
 		}
+	}
+	
+	private static void printOrganization(Organization organization) {
+		System.out.print("ID: " + organization.getId());
+		System.out.print("  Name: " + organization.getName());
+		System.out.print("  Address: " + organization.getAddress() + "\n");
 	}
 }

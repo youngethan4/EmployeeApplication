@@ -8,12 +8,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,10 +28,10 @@ public class Organization {
 	private String name;
 	private String address;
 	
-//	@LazyCollection(LazyCollectionOption.FALSE)
-//	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
-//	private List<Department> departments = new ArrayList<>();
-//	@LazyCollection(LazyCollectionOption.FALSE)
-//	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL)
-//	private List<Employee> employees = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Department> departments = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "organization", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Employee> employees = new ArrayList<>();
 }

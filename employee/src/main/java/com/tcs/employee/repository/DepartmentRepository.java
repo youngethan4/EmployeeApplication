@@ -8,10 +8,10 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.stereotype.Repository;
 
 import com.tcs.employee.model.Department;
+import com.tcs.employee.model.Organization;
 
 @Repository
 public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
-	@EntityGraph(value = "Department.organizationId", type = EntityGraphType.FETCH)
-	public List<Department> findByOrganizationId(long id);
+	public List<Department> findByOrganization(Organization organization);
 }
