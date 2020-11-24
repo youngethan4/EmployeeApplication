@@ -8,57 +8,65 @@ import org.springframework.context.ApplicationContext;
 
 public class Menu {
 
+	public static enum model {
+		DEPT, EMPLOYEE, ORG
+	}
+
 	public static void start(ApplicationContext context) {
-		String menuOptions = "'c' - Cancel | 'e' - Employee | 'd' - Department | "
-				+ "o - Organization";
+		model selected = null;
+		String menuOptions = "'c' - Cancel | 'e' - Employee | 'd' - Department | " + "o - Organization";
 		String input = getInput(menuOptions);
-		while(!"c".equals(input)) {
-			switch(input) {
+		while (!"c".equals(input)) {
+			switch (input) {
 			case "c":
+				selected = null;
 				break;
 			case "e":
-				EmployeeMenu.start(context);
+				selected = model.EMPLOYEE;
 				break;
 			case "d":
-				DepartmentMenu.start(context);
+				selected = model.DEPT;
 				break;
 			case "o":
-				OrganizationMenu.start(context);
+				selected = model.ORG;
 				break;
 			default:
+				selected = null;
 				System.out.println("invalid command");
 			}
+			if (selected != null)
+				Operations.start(context, selected);
 			System.out.println();
 			input = getInput(menuOptions);
 		}
 	}
-	
+
 	public static int getInputInt(String output) {
 		String input = getInput(output);
 		int inputInt = -1;
 		try {
 			inputInt = Integer.valueOf(input);
-		} catch(NumberFormatException e){
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			System.out.println("Number not detected.");
 			return getInputInt(output);
 		}
 		return inputInt;
 	}
-	
+
 	public static long getInputLong(String output) {
 		String input = getInput(output);
 		long inputLong = -1;
 		try {
 			inputLong = Long.valueOf(input);
-		} catch(NumberFormatException e){
+		} catch (NumberFormatException e) {
 			e.printStackTrace();
 			System.out.println("Number not detected.");
 			return getInputLong(output);
 		}
 		return inputLong;
 	}
-	
+
 	public static String getInput(String output) {
 		InputStreamReader isr = new InputStreamReader(System.in);
 		BufferedReader br = new BufferedReader(isr);
